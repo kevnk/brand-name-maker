@@ -1,4 +1,6 @@
-# brand
+# Brand Name Maker
+
+Fully inspired by [Ben Pieratt](https://twitter.com/pieratt)'s [3-step process for naming a project](http://blog.pieratt.com/post/77293289254/a-3-step-process-for-naming-a-projectproduct). You should check it out first.
 
 ## Project setup
 ```
@@ -15,15 +17,7 @@ yarn run serve
 yarn run build
 ```
 
-### Run your tests
-```
-yarn run test
-```
 
-### Lints and fixes files
-```
-yarn run lint
-```
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
