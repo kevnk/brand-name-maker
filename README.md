@@ -17,6 +17,11 @@ yarn run serve
 yarn run build
 ```
 
+### Deploy `/dist` as subtree to `gh-page` branch
+```
+yarn run deploy
+```
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
