@@ -33,3 +33,4 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 - On results, integrate with [Domainr API](https://domainr.com/docs/api) to show which domains are available for each name
 - On results, create "random" combinations/mix-and-match results using what they created
 - Integrate with [some](https://words.bighugelabs.com/api.php) [thesaurus](https://dictionaryapi.com/products/api-collegiate-thesaurus)/[word](https://www.wordsapi.com/) [API](https://www.programmableweb.com/api/thesaurus) to list other ideas based on past input
+- Create a team project to be able to share different parts of contribution
