@@ -17,7 +17,19 @@ yarn run serve
 yarn run build
 ```
 
-
-
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+
+### Ideas for Improvements
+- Start with naming the project so you can save projects 
+- Vuex so we can more easily separate components
+- Use a real DB with user sign-in OR [Immortal DB](https://github.com/gruns/ImmortalDB)
+- VueRouter so we can more easily navigate through steps
+    - Specifically, when returning back to the site after completing a couple steps
+- Rethink full UX 
+    - More focus on the input 
+    - Less focus on other things
+- On results, integrate with [Domainr API](https://domainr.com/docs/api) to show which domains are available for each name
+- On results, create "random" combinations/mix-and-match results using what they created
+- Integrate with [some](https://words.bighugelabs.com/api.php) [thesaurus](https://dictionaryapi.com/products/api-collegiate-thesaurus)/[word](https://www.wordsapi.com/) [API](https://www.programmableweb.com/api/thesaurus) to list other ideas based on past input

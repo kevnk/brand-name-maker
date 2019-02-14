@@ -301,9 +301,10 @@ input[type="text"] {
   padding-top: 10px;
   div {
     box-sizing: border-box;
-    padding: 10px;
-    width: 33%;
+    padding: 10px 15px;
+    min-width: 33%;
     font-size: 16px;
+    white-space: nowrap;
   }
 }
 </style>
