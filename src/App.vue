@@ -8,6 +8,22 @@
       rel="noopener"
       >3-step naming process</a
     >. <br /><small>Read it first.</small> <BrandNameMaker />
+    <blockquote class="embedly-card">
+      <h4>
+        <a href="https://github.com/kevnk/brand-name-maker"
+          >kevnk/brand-name-maker</a
+        >
+      </h4>
+      <p>
+        Contribute to kevnk/brand-name-maker development by creating an account
+        on GitHub.
+      </p>
+    </blockquote>
+    <script
+      async
+      src="//cdn.embedly.com/widgets/platform.js"
+      charset="UTF-8"
+    ></script>
   </div>
 </template>
 
@@ -32,6 +48,9 @@ export default {
   margin-top: 60px;
   small {
     opacity: 0.5;
+  }
+  .embedly-card {
+    margin-top: 100px;
   }
 }
 </style>
