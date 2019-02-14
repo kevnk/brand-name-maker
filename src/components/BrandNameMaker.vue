@@ -160,7 +160,7 @@ export default {
     addFeelings(e) {
       if (e.charCode === 13) {
         let feeling = e.target.value;
-        this.feelings.push({ val: feeling });
+        this.feelings.unshift({ val: feeling });
         this.feelingInput = "";
       }
     },
@@ -170,7 +170,10 @@ export default {
     addEmbodiment(e) {
       if (e.charCode === 13) {
         let embodiment = e.target.value;
-        this.embodiments.push({ val: embodiment, feeling: this.activeFeeling });
+        this.embodiments.unshift({
+          val: embodiment,
+          feeling: this.activeFeeling,
+        });
         this.embodimentInput = "";
       }
     },
@@ -180,7 +183,7 @@ export default {
     addCharacteristic(e) {
       if (e.charCode === 13) {
         let characteristic = e.target.value;
-        this.characteristics.push({
+        this.characteristics.unshift({
           val: characteristic,
           embodiment: this.activeEmbodiment,
         });
