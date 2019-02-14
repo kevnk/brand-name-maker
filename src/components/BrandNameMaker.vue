@@ -11,7 +11,9 @@
       v-if="curStepIndex + 1 < steps.length"
       class="btn next"
       @click.prevent="curStepIndex = curStepIndex + 1;"
-      :disabled="!feelings.length"
+      :disabled="
+        !feelings.length || (curStepIndex === 1 && !embodiments.length)
+      "
     >
       NEXT &rarr;
     </button>
@@ -19,6 +21,7 @@
       v-if="curStepIndex + 1 === steps.length"
       class="btn finish"
       @click.prevent="curStepIndex = curStepIndex + 1;"
+      :disabled="curStepIndex === 2 && !characteristics.length"
     >
       FINISH
     </button>
@@ -51,13 +54,15 @@
       <div v-if="curStepIndex === 1">
         <p>
           List persons, places, things, and/or phrases that <i>embody</i> for
-          each of your feelings. <br /><small>Click one to begin:</small>
+          each of your feelings.
         </p>
         <button
           class="btn link"
           :class="{ active: activeFeeling == feeling }"
-          v-for="(feeling, index) in feelings"
-          @click.prevent="activeFeeling = feelings[index];"
+          v-for="(feeling, index) in feelingsReversed"
+          @click.prevent="
+            activeFeeling = feelings[feelings.length - 1 - index];
+          "
         >
           {{ feeling.val }}
         </button>
@@ -84,15 +89,14 @@
 
       <!-- Step 3 -->
       <div v-if="curStepIndex === 2">
-        <p>
-          Finally, identify a specific characteristic of each embodiment.
-          <br /><small>Click one to begin:</small><br />
-        </p>
+        <p>Finally, identify a specific characteristic of each embodiment.</p>
         <button
           class="btn link"
           :class="{ active: activeEmbodiment == embodiment }"
-          v-for="(embodiment, index) in embodiments"
-          @click.prevent="activeEmbodiment = embodiments[index];"
+          v-for="(embodiment, index) in embodimentsReversed"
+          @click.prevent="
+            activeEmbodiment = embodiments[embodiments.length - 1 - index];
+          "
         >
           {{ embodiment.val }}
         </button>
@@ -119,11 +123,24 @@
     </div>
     <div v-else class="results">
       <h2>Results</h2>
+      <a href="#" style="color: salmon" @click.prevent="reset"
+        >Clear & Start Over</a
+      >
       <div class="characteristics">
         <div v-for="characteristic in characteristics">
           {{ characteristic.val }}
         </div>
       </div>
+    </div>
+    <div v-if="projectCount" class="projects">
+      <h5>Load Previous Project:</h5>
+      <button
+        class="btn link"
+        v-for="(n, index) in projectCount"
+        @click.prevent="loadProject(n);"
+      >
+        {{ n }}
+      </button>
     </div>
   </div>
 </template>
@@ -144,16 +161,26 @@ export default {
       characteristics: localStorage.getItem("characteristics")
         ? JSON.parse(localStorage.getItem("characteristics"))
         : [],
+      projectCount: localStorage.getItem("projectCount")
+        ? parseInt(localStorage.getItem("projectCount"))
+        : 0,
       feelingInput: "",
       embodimentInput: "",
       characteristicInput: "",
       activeFeeling: "",
       activeEmbodiment: "",
+      dirty: false,
     };
   },
   computed: {
     curStep() {
       return this.steps[this.curStepIndex];
+    },
+    feelingsReversed() {
+      return this.feelings.slice().reverse();
+    },
+    embodimentsReversed() {
+      return this.embodiments.slice().reverse();
     },
   },
   methods: {
@@ -162,10 +189,12 @@ export default {
         let feeling = e.target.value;
         this.feelings.unshift({ val: feeling });
         this.feelingInput = "";
+        this.dirty = true;
       }
     },
     removeFeeling(index) {
       this.feelings.splice(index, 1);
+      this.dirty = true;
     },
     addEmbodiment(e) {
       if (e.charCode === 13) {
@@ -175,10 +204,12 @@ export default {
           feeling: this.activeFeeling,
         });
         this.embodimentInput = "";
+        this.dirty = true;
       }
     },
     removeEmbodiment(index) {
       this.embodiments.splice(index, 1);
+      this.dirty = true;
     },
     addCharacteristic(e) {
       if (e.charCode === 13) {
@@ -188,10 +219,48 @@ export default {
           embodiment: this.activeEmbodiment,
         });
         this.characteristicInput = "";
+        this.dirty = true;
       }
     },
     removeCharacteristic(index) {
       this.characteristics.splice(index, 1);
+      this.dirty = true;
+    },
+    reset() {
+      if (this.dirty) {
+        let count = this.projectCount + 1;
+        localStorage.setItem(
+          `feelings-${count}`,
+          JSON.stringify(this.feelings)
+        );
+        localStorage.setItem(
+          `embodiments-${count}`,
+          JSON.stringify(this.embodiments)
+        );
+        localStorage.setItem(
+          `characteristics-${count}`,
+          JSON.stringify(this.characteristics)
+        );
+        this.projectCount = count;
+      }
+      this.feelings = [];
+      this.embodiments = [];
+      this.characteristics = [];
+      this.curStepIndex = 0;
+      this.dirty = false;
+    },
+    loadProject(count) {
+      this.feelings = localStorage.getItem(`feelings-${count}`)
+        ? JSON.parse(localStorage.getItem(`feelings-${count}`))
+        : [];
+      this.embodiments = localStorage.getItem(`embodiments-${count}`)
+        ? JSON.parse(localStorage.getItem(`embodiments-${count}`))
+        : [];
+      this.characteristics = localStorage.getItem(`characteristics-${count}`)
+        ? JSON.parse(localStorage.getItem(`characteristics-${count}`))
+        : [];
+      this.curStepIndex = 0;
+      this.dirty = false;
     },
   },
   watch: {
@@ -207,6 +276,9 @@ export default {
         JSON.stringify(this.characteristics)
       );
     },
+    projectCount() {
+      localStorage.setItem("projectCount", JSON.stringify(this.projectCount));
+    },
     activeFeeling() {
       setTimeout(() => {
         this.$refs.embodimentInput.focus();
@@ -216,6 +288,13 @@ export default {
       setTimeout(() => {
         this.$refs.characteristicInput.focus();
       }, 0);
+    },
+    curStepIndex() {
+      if (this.curStepIndex === 1) {
+        this.activeFeeling = this.feelings[this.feelings.length - 1];
+      } else if (this.curStepIndex === 2) {
+        this.activeEmbodiment = this.embodiments[this.embodiments.length - 1];
+      }
     },
   },
 };
@@ -306,5 +385,8 @@ input[type="text"] {
     font-size: 16px;
     white-space: nowrap;
   }
+}
+.projects {
+  padding: 50px 0;
 }
 </style>
