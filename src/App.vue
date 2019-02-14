@@ -7,7 +7,7 @@
       target="_blank"
       rel="noopener"
       >3-step naming process</a
-    >. <BrandNameMaker />
+    >. <br /><small>Read it first.</small> <BrandNameMaker />
   </div>
 </template>
 
@@ -30,5 +30,8 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+  small {
+    opacity: 0.5;
+  }
 }
 </style>
