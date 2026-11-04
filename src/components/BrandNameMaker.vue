@@ -185,7 +185,7 @@ export default {
   },
   methods: {
     addFeelings(e) {
-      if (e.charCode === 13) {
+      if (e.charCode === 13 && e.target.value.trim()) {
         let feeling = e.target.value;
         this.feelings.unshift({ val: feeling });
         this.feelingInput = "";
@@ -197,7 +197,7 @@ export default {
       this.dirty = true;
     },
     addEmbodiment(e) {
-      if (e.charCode === 13) {
+      if (e.charCode === 13 && e.target.value.trim()) {
         let embodiment = e.target.value;
         this.embodiments.unshift({
           val: embodiment,
@@ -212,7 +212,7 @@ export default {
       this.dirty = true;
     },
     addCharacteristic(e) {
-      if (e.charCode === 13) {
+      if (e.charCode === 13 && e.target.value.trim()) {
         let characteristic = e.target.value;
         this.characteristics.unshift({
           val: characteristic,

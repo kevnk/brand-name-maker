@@ -240,3 +240,25 @@ test("editing a loaded project and clearing it saves the edit as a new project",
   await click(el, "2");
   assert.deepEqual(items(el), ["Bold", "Safe", "Relieved"]);
 });
+
+test("Enter in an empty or blank field adds nothing, on every step", async () => {
+  const el = await mount(BrandNameMaker);
+  await enter(el, "");
+  await enter(el, "   ");
+  assert.deepEqual(items(el), []);
+  assert.equal(button(el, "NEXT").disabled, true);
+
+  await enter(el, "Relieved");
+  await click(el, "NEXT");
+  await enter(el, "");
+  await enter(el, " \t ");
+  assert.deepEqual(items(el), []);
+  assert.equal(button(el, "NEXT").disabled, true);
+
+  await enter(el, "Hot bath");
+  await click(el, "NEXT");
+  await enter(el, "");
+  await enter(el, "  ");
+  assert.deepEqual(items(el), []);
+  assert.equal(button(el, "FINISH").disabled, true);
+});
