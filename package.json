@@ -6,6 +6,7 @@
     "start": "yarn serve",
     "build": "vue-cli-service build",
     "test": "node --import ./test/setup.mjs --test test/*.test.mjs",
+    "lint": "eslint .",
     "deploy": "git subtree push --prefix dist origin gh-pages"
   },
   "dependencies": {

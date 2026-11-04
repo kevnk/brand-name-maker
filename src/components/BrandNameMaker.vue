@@ -42,7 +42,11 @@
           @keypress="addFeelings"
         />
         <small>hit "Enter" to add your feeling</small>
-        <div v-for="(feeling, index) in feelings" class="list-item">
+        <div
+          v-for="(feeling, index) in feelings"
+          :key="index"
+          class="list-item"
+        >
           <b>{{ feeling.val }}</b>
           <button class="btn remove" @click="removeFeeling(index);">
             <b>&times;</b>
@@ -60,6 +64,7 @@
           class="btn link"
           :class="{ active: activeFeeling == feeling }"
           v-for="(feeling, index) in feelingsReversed"
+          :key="`tab-${index}`"
           @click.prevent="
             activeFeeling = feelings[feelings.length - 1 - index];
           "
@@ -75,16 +80,18 @@
           />
           <small>hit "Enter" to add your embodiment</small>
         </div>
-        <div
-          class="list-item"
-          v-for="(embodiment, index) in embodiments"
-          v-if="embodiment.feeling.val == activeFeeling.val"
-        >
-          <b>{{ embodiment.val }}</b>
-          <button class="btn remove" @click="removeEmbodiment(index);">
-            <b>&times;</b>
-          </button>
-        </div>
+        <template v-for="(embodiment, index) in embodiments">
+          <div
+            v-if="embodiment.feeling.val == activeFeeling.val"
+            :key="index"
+            class="list-item"
+          >
+            <b>{{ embodiment.val }}</b>
+            <button class="btn remove" @click="removeEmbodiment(index);">
+              <b>&times;</b>
+            </button>
+          </div>
+        </template>
       </div>
 
       <!-- Step 3 -->
@@ -94,6 +101,7 @@
           class="btn link"
           :class="{ active: activeEmbodiment == embodiment }"
           v-for="(embodiment, index) in embodimentsReversed"
+          :key="`tab-${index}`"
           @click.prevent="
             activeEmbodiment = embodiments[embodiments.length - 1 - index];
           "
@@ -109,16 +117,18 @@
           />
           <small>hit "Enter" to add your characteristic</small>
         </div>
-        <div
-          class="list-item"
-          v-for="(characteristic, index) in characteristics"
-          v-if="characteristic.embodiment.val == activeEmbodiment.val"
-        >
-          <b>{{ characteristic.val }}</b>
-          <button class="btn remove" @click="removeCharacteristic(index);">
-            <b>&times;</b>
-          </button>
-        </div>
+        <template v-for="(characteristic, index) in characteristics">
+          <div
+            v-if="characteristic.embodiment.val == activeEmbodiment.val"
+            :key="index"
+            class="list-item"
+          >
+            <b>{{ characteristic.val }}</b>
+            <button class="btn remove" @click="removeCharacteristic(index);">
+              <b>&times;</b>
+            </button>
+          </div>
+        </template>
       </div>
     </div>
     <div v-else class="results">
@@ -127,7 +137,10 @@
         >Clear & Start Over</a
       >
       <div class="characteristics">
-        <div v-for="characteristic in characteristics">
+        <div
+          v-for="(characteristic, index) in characteristics"
+          :key="index"
+        >
           {{ characteristic.val }}
         </div>
       </div>
@@ -136,7 +149,8 @@
       <h5>Load Previous Project:</h5>
       <button
         class="btn link"
-        v-for="(n, index) in projectCount"
+        v-for="n in projectCount"
+        :key="n"
         @click.prevent="loadProject(n);"
       >
         {{ n }}
