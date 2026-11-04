@@ -262,3 +262,35 @@ test("Enter in an empty or blank field adds nothing, on every step", async () =>
   assert.deepEqual(items(el), []);
   assert.equal(button(el, "FINISH").disabled, true);
 });
+
+test("Clear & Start Over after a reload still saves the unsaved work", async () => {
+  const before = await mount(BrandNameMaker);
+  await fillAllSteps(before);
+
+  const el = await mount(BrandNameMaker);
+  await click(el, "NEXT");
+  await click(el, "NEXT");
+  await click(el, "FINISH");
+  assert.deepEqual(results(el), ["Steam"]);
+  await click(el, "Clear & Start Over");
+
+  assert.deepEqual(projects(el), ["1"]);
+  await click(el, "1");
+  assert.deepEqual(items(el), ["Safe", "Relieved"]);
+});
+
+test("after a reload, clearing an unchanged loaded project still saves no copy", async () => {
+  const before = await mount(BrandNameMaker);
+  await fillAllSteps(before);
+  await click(before, "FINISH");
+  await click(before, "Clear & Start Over");
+  await click(before, "1");
+
+  const el = await mount(BrandNameMaker);
+  await click(el, "NEXT");
+  await click(el, "NEXT");
+  await click(el, "FINISH");
+  await click(el, "Clear & Start Over");
+
+  assert.deepEqual(projects(el), ["1"]);
+});

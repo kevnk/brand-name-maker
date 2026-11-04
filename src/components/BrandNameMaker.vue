@@ -169,7 +169,7 @@ export default {
       characteristicInput: "",
       activeFeeling: "",
       activeEmbodiment: "",
-      dirty: false,
+      dirty: localStorage.getItem("dirty") === "true",
     };
   },
   computed: {
@@ -278,6 +278,9 @@ export default {
     },
     projectCount() {
       localStorage.setItem("projectCount", JSON.stringify(this.projectCount));
+    },
+    dirty() {
+      localStorage.setItem("dirty", JSON.stringify(this.dirty));
     },
     activeFeeling() {
       setTimeout(() => {
