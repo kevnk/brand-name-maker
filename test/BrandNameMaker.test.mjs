@@ -294,3 +294,23 @@ test("after a reload, clearing an unchanged loaded project still saves no copy",
 
   assert.deepEqual(projects(el), ["1"]);
 });
+
+test("Load Previous Project saves unsaved typed work to a new project first", async () => {
+  const el = await mount(BrandNameMaker);
+  await fillAllSteps(el);
+  await click(el, "FINISH");
+  await click(el, "Clear & Start Over");
+
+  await enter(el, "Curious");
+  await enter(el, "Brave");
+  await click(el, "1");
+
+  assert.deepEqual(items(el), ["Safe", "Relieved"]);
+  assert.deepEqual(projects(el), ["1", "2"]);
+  await click(el, "2");
+  assert.deepEqual(items(el), ["Brave", "Curious"]);
+
+  // Switching between saved projects with no edits saves nothing new.
+  await click(el, "1");
+  assert.deepEqual(projects(el), ["1", "2"]);
+});
