@@ -11,7 +11,7 @@ Live at <https://www.kevnk.com/brand-name-maker/>.
 
 **FINISH** shows every characteristic you wrote. **BACK** returns to a step, and **×** removes an entry.
 
-Your work is kept in the browser's localStorage, so a reload doesn't lose it. **Clear & Start Over** saves the current work as a numbered project, then clears it. Reopen a saved project under **Load Previous Project**.
+Your work is kept in the browser's localStorage, so a reload doesn't lose it. **Clear & Start Over** saves the current work as a numbered project, then clears it. Reopen a saved project under **Load Previous Project**. If you've changed anything since the last save, loading saves that work as a new project first.
 
 ## Development
 Use Node 22 (`nvm use` reads `.nvmrc`). On Node 24 and 26, `yarn serve` crashes with `No such module: http_parser` (webpack-dev-server 3), though build, test and lint still work. `yarn test` needs Node 22.15 or later.

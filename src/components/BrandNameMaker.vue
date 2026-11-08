@@ -240,23 +240,26 @@ export default {
       this.characteristics.splice(index, 1);
       this.dirty = true;
     },
+    // Unsaved work goes to a new project slot before anything replaces it.
+    saveIfDirty() {
+      if (!this.dirty) return;
+      let count = this.projectCount + 1;
+      localStorage.setItem(
+        `feelings-${count}`,
+        JSON.stringify(this.feelings)
+      );
+      localStorage.setItem(
+        `embodiments-${count}`,
+        JSON.stringify(this.embodiments)
+      );
+      localStorage.setItem(
+        `characteristics-${count}`,
+        JSON.stringify(this.characteristics)
+      );
+      this.projectCount = count;
+    },
     reset() {
-      if (this.dirty) {
-        let count = this.projectCount + 1;
-        localStorage.setItem(
-          `feelings-${count}`,
-          JSON.stringify(this.feelings)
-        );
-        localStorage.setItem(
-          `embodiments-${count}`,
-          JSON.stringify(this.embodiments)
-        );
-        localStorage.setItem(
-          `characteristics-${count}`,
-          JSON.stringify(this.characteristics)
-        );
-        this.projectCount = count;
-      }
+      this.saveIfDirty();
       this.feelings = [];
       this.embodiments = [];
       this.characteristics = [];
@@ -264,6 +267,7 @@ export default {
       this.dirty = false;
     },
     loadProject(count) {
+      this.saveIfDirty();
       this.feelings = localStorage.getItem(`feelings-${count}`)
         ? JSON.parse(localStorage.getItem(`feelings-${count}`))
         : [];
