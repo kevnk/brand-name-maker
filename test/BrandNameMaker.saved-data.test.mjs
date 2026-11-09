@@ -1,6 +1,7 @@
 // Saved work that can't be read back (not JSON, or not the type the app
-// saved) starts empty instead of stopping the page from mounting. And each
-// text field, × and tab says what it is to a screen reader.
+// saved) starts empty, and a saved list drops entries it can't show, instead
+// of stopping the page from mounting. And each text field, × and tab says
+// what it is to a screen reader.
 import { afterEach, beforeEach, test } from "node:test";
 import assert from "node:assert/strict";
 import BrandNameMaker from "../src/components/BrandNameMaker.vue";
@@ -84,6 +85,42 @@ test("loading a project whose saved lists are bad gives an empty project", async
 
   await allThreeSteps(el);
   assert.deepEqual(results(el), ["Steam"]);
+});
+
+test("saved list items that aren't the app's own entries are dropped, and the rest still show", async () => {
+  localStorage.setItem("feelings", JSON.stringify([null, { val: "Safe" }, "Relieved", { val: 7 }]));
+  localStorage.setItem(
+    "embodiments",
+    JSON.stringify([{ val: "Seatbelt", feeling: { val: "Safe" } }, { val: "Hot bath" }, null])
+  );
+  localStorage.setItem(
+    "characteristics",
+    JSON.stringify([{ val: "Click", embodiment: { val: "Seatbelt" } }, 3, { embodiment: { val: "Seatbelt" } }, { val: "Loud" }])
+  );
+
+  const el = await mount(BrandNameMaker);
+  assert.deepEqual(items(el), ["Safe"]);
+  await click(el, "NEXT");
+  assert.deepEqual(items(el), ["Seatbelt"]);
+  await click(el, "NEXT");
+  assert.deepEqual(items(el), ["Click"]);
+  await click(el, "FINISH");
+  assert.deepEqual(results(el), ["Click"]);
+});
+
+test("loading a project drops list items that aren't the app's own entries", async () => {
+  localStorage.setItem("projectCount", "1");
+  localStorage.setItem("feelings-1", JSON.stringify([{ val: "Calm" }, [], { feeling: "x" }]));
+  localStorage.setItem("embodiments-1", JSON.stringify([{ val: "Tea", feeling: null }, { val: "Lake", feeling: { val: "Calm" } }]));
+  localStorage.setItem("characteristics-1", JSON.stringify([false, { val: "Still", embodiment: { val: "Lake" } }]));
+
+  const el = await mount(BrandNameMaker);
+  await click(el, "1");
+  assert.deepEqual(items(el), ["Calm"]);
+  await click(el, "NEXT");
+  assert.deepEqual(items(el), ["Lake"]);
+  await click(el, "NEXT");
+  assert.deepEqual(items(el), ["Still"]);
 });
 
 test("each text field, × and tab says what it is", async () => {
