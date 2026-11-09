@@ -1,0 +1,111 @@
+// Saved work that can't be read back (not JSON, or not the type the app
+// saved) starts empty instead of stopping the page from mounting. And each
+// text field, × and tab says what it is to a screen reader.
+import { afterEach, beforeEach, test } from "node:test";
+import assert from "node:assert/strict";
+import BrandNameMaker from "../src/components/BrandNameMaker.vue";
+import {
+  click,
+  enter,
+  heading,
+  input,
+  items,
+  mount,
+  projects,
+  results,
+  vueErrors,
+} from "./helpers.mjs";
+
+beforeEach(() => {
+  localStorage.clear();
+  vueErrors.length = 0;
+});
+afterEach(() => assert.deepEqual(vueErrors, []));
+
+const label = (node) => node.getAttribute("aria-label");
+const removeLabels = (el) =>
+  [...el.querySelectorAll(".list-item button.remove")].map(label);
+// { tab text: aria-pressed } for the step 2 and step 3 tabs
+const pressed = (el) =>
+  Object.fromEntries(
+    [...el.querySelectorAll("button.link")]
+      .filter((b) => !b.closest(".projects"))
+      .map((b) => [b.textContent.trim(), b.getAttribute("aria-pressed")])
+  );
+
+async function allThreeSteps(el) {
+  await enter(el, "Relieved");
+  await click(el, "NEXT");
+  await enter(el, "Hot bath");
+  await click(el, "NEXT");
+  await enter(el, "Steam");
+  await click(el, "FINISH");
+}
+
+test("saved lists that aren't JSON or aren't lists start empty, and all three steps still work", async () => {
+  localStorage.setItem("feelings", "{not json");
+  localStorage.setItem("embodiments", '"Hot bath"');
+  localStorage.setItem("characteristics", "42");
+  localStorage.setItem("projectCount", "[]");
+
+  const el = await mount(BrandNameMaker);
+  assert.equal(heading(el), "Feelings");
+  assert.deepEqual(items(el), []);
+  assert.deepEqual(projects(el), []);
+
+  await allThreeSteps(el);
+  assert.deepEqual(results(el), ["Steam"]);
+  assert.equal(localStorage.getItem("feelings"), '[{"val":"Relieved"}]');
+});
+
+test('a stored "null" in every key starts empty', async () => {
+  for (const key of ["feelings", "embodiments", "characteristics", "projectCount"]) {
+    localStorage.setItem(key, "null");
+  }
+  const el = await mount(BrandNameMaker);
+  assert.deepEqual(items(el), []);
+  assert.deepEqual(projects(el), []);
+
+  await allThreeSteps(el);
+  assert.deepEqual(results(el), ["Steam"]);
+});
+
+test("loading a project whose saved lists are bad gives an empty project", async () => {
+  localStorage.setItem("projectCount", "1");
+  localStorage.setItem("feelings-1", "{oops");
+  localStorage.setItem("embodiments-1", "null");
+  localStorage.setItem("characteristics-1", "7");
+
+  const el = await mount(BrandNameMaker);
+  assert.deepEqual(projects(el), ["1"]);
+  await click(el, "1");
+  assert.equal(heading(el), "Feelings");
+  assert.deepEqual(items(el), []);
+
+  await allThreeSteps(el);
+  assert.deepEqual(results(el), ["Steam"]);
+});
+
+test("each text field, × and tab says what it is", async () => {
+  const el = await mount(BrandNameMaker);
+  assert.equal(label(input(el)), "Add a feeling");
+  await enter(el, "Relieved");
+  await enter(el, "Safe");
+  assert.deepEqual(removeLabels(el), ["Remove Safe", "Remove Relieved"]);
+
+  await click(el, "NEXT");
+  assert.deepEqual(pressed(el), { Relieved: "true", Safe: "false" });
+  assert.equal(label(input(el)), "Add an embodiment of Relieved");
+  await enter(el, "Hot bath");
+  assert.deepEqual(removeLabels(el), ["Remove Hot bath"]);
+  await click(el, "Safe");
+  assert.deepEqual(pressed(el), { Relieved: "false", Safe: "true" });
+  assert.equal(label(input(el)), "Add an embodiment of Safe");
+  await enter(el, "Seatbelt");
+
+  await click(el, "NEXT");
+  assert.deepEqual(pressed(el), { "Hot bath": "true", Seatbelt: "false" });
+  assert.equal(label(input(el)), "Add a characteristic of Hot bath");
+  await enter(el, "Steam");
+  assert.deepEqual(removeLabels(el), ["Remove Steam"]);
+});
