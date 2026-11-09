@@ -168,6 +168,7 @@
         class="btn link"
         v-for="n in projectCount"
         :key="n"
+        :aria-label="'Load project ' + n"
         @click.prevent="loadProject(n);"
       >
         {{ n }}

@@ -1,6 +1,6 @@
 // Saved work that can't be read back (not JSON, or not the type the app
 // saved) starts empty instead of stopping the page from mounting. And each
-// text field, × and tab says what it is to a screen reader.
+// text field, ×, tab and project button says what it is to a screen reader.
 import { afterEach, beforeEach, test } from "node:test";
 import assert from "node:assert/strict";
 import BrandNameMaker from "../src/components/BrandNameMaker.vue";
@@ -108,4 +108,18 @@ test("each text field, × and tab says what it is", async () => {
   assert.equal(label(input(el)), "Add a characteristic of Hot bath");
   await enter(el, "Steam");
   assert.deepEqual(removeLabels(el), ["Remove Steam"]);
+});
+
+test("each Load Previous Project button names the project it loads", async () => {
+  const el = await mount(BrandNameMaker);
+  await allThreeSteps(el);
+  await click(el, "Clear & Start Over");
+  await allThreeSteps(el);
+  await click(el, "Clear & Start Over");
+
+  assert.deepEqual(projects(el), ["1", "2"]);
+  assert.deepEqual(
+    [...el.querySelectorAll(".projects button")].map(label),
+    ["Load project 1", "Load project 2"]
+  );
 });
