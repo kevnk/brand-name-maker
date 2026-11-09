@@ -3,7 +3,7 @@
     <h1>Brand Name Maker</h1>
     Based off
     <a href="https://twitter.com/pieratt" target="_blank" rel="noopener"
-      >Ben Pierett</a
+      >Ben Pieratt</a
     >'s
     <a
       href="http://blog.pieratt.com/post/77293289254/a-3-step-process-for-naming-a-projectproduct"
