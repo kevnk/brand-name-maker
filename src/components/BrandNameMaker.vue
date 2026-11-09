@@ -192,15 +192,24 @@ function safeLoad(key, fallback) {
   return fallback;
 }
 
+// A saved list keeps only entries shaped like the ones the add methods save:
+// a string val, plus the feeling an embodiment belongs to or the embodiment a
+// characteristic belongs to. Anything else (null, a bare string) would break
+// the render, so it's dropped.
+const named = (item) => Boolean(item) && typeof item.val === "string";
+const isEmbodiment = (item) => named(item) && named(item.feeling);
+const isCharacteristic = (item) => named(item) && named(item.embodiment);
+const loadList = (key, isItem) => safeLoad(key, []).filter(isItem);
+
 export default {
   name: "BrandNameMaker",
   data() {
     return {
       steps: ["Feelings", "Embodiment", "Characteristic"],
       curStepIndex: 0,
-      feelings: safeLoad("feelings", []),
-      embodiments: safeLoad("embodiments", []),
-      characteristics: safeLoad("characteristics", []),
+      feelings: loadList("feelings", named),
+      embodiments: loadList("embodiments", isEmbodiment),
+      characteristics: loadList("characteristics", isCharacteristic),
       projectCount: safeLoad("projectCount", 0),
       feelingInput: "",
       embodimentInput: "",
@@ -292,9 +301,9 @@ export default {
     },
     loadProject(count) {
       this.saveIfDirty();
-      this.feelings = safeLoad(`feelings-${count}`, []);
-      this.embodiments = safeLoad(`embodiments-${count}`, []);
-      this.characteristics = safeLoad(`characteristics-${count}`, []);
+      this.feelings = loadList(`feelings-${count}`, named);
+      this.embodiments = loadList(`embodiments-${count}`, isEmbodiment);
+      this.characteristics = loadList(`characteristics-${count}`, isCharacteristic);
       this.curStepIndex = 0;
       this.dirty = false;
     },
