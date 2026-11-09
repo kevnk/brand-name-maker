@@ -1,7 +1,6 @@
 // Saved work that can't be read back (not JSON, or not the type the app
-// saved) starts empty, and a saved list drops entries it can't show, instead
-// of stopping the page from mounting. And each text field, × and tab says
-// what it is to a screen reader.
+// saved) starts empty instead of stopping the page from mounting. And each
+// text field, × and tab says what it is to a screen reader.
 import { afterEach, beforeEach, test } from "node:test";
 import assert from "node:assert/strict";
 import BrandNameMaker from "../src/components/BrandNameMaker.vue";
@@ -87,6 +86,7 @@ test("loading a project whose saved lists are bad gives an empty project", async
   assert.deepEqual(results(el), ["Steam"]);
 });
 
+// A saved list is kept, minus any entry the page can't show.
 test("saved list items that aren't the app's own entries are dropped, and the rest still show", async () => {
   localStorage.setItem("feelings", JSON.stringify([null, { val: "Safe" }, "Relieved", { val: 7 }]));
   localStorage.setItem(
