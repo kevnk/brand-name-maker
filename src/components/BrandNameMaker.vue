@@ -380,6 +380,11 @@ input[type="text"] {
   &:hover {
     cursor: pointer;
   }
+  // Keyboard focus only: a mouse click still shows no outline.
+  &:focus-visible {
+    outline: 2px solid #2c3e50;
+    outline-offset: 2px;
+  }
   &.back {
     float: left;
   }
