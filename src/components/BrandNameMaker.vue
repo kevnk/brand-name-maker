@@ -36,6 +36,7 @@
         <p>List 2-5 <i>feelings</i> you want your brand to invoke.</p>
         <input
           type="text"
+          aria-label="Add a feeling"
           v-bind:placeholder="feelings.length ? '' : 'eg. Relieved'"
           ref="feelings"
           v-model="feelingInput"
@@ -44,7 +45,11 @@
         <small>hit "Enter" to add your feeling</small>
         <div v-for="(feeling, index) in feelings" class="list-item">
           <b>{{ feeling.val }}</b>
-          <button class="btn remove" @click="removeFeeling(index);">
+          <button
+            class="btn remove"
+            :aria-label="'Remove ' + feeling.val"
+            @click="removeFeeling(index);"
+          >
             <b>&times;</b>
           </button>
         </div>
@@ -59,6 +64,7 @@
         <button
           class="btn link"
           :class="{ active: activeFeeling == feeling }"
+          :aria-pressed="String(activeFeeling == feeling)"
           v-for="(feeling, index) in feelingsReversed"
           @click.prevent="
             activeFeeling = feelings[feelings.length - 1 - index];
@@ -69,6 +75,7 @@
         <div style="padding-top:15px;" v-if="activeFeeling">
           <input
             type="text"
+            :aria-label="'Add an embodiment of ' + activeFeeling.val"
             v-model="embodimentInput"
             ref="embodimentInput"
             @keypress="addEmbodiment"
@@ -81,7 +88,11 @@
           v-if="embodiment.feeling.val == activeFeeling.val"
         >
           <b>{{ embodiment.val }}</b>
-          <button class="btn remove" @click="removeEmbodiment(index);">
+          <button
+            class="btn remove"
+            :aria-label="'Remove ' + embodiment.val"
+            @click="removeEmbodiment(index);"
+          >
             <b>&times;</b>
           </button>
         </div>
@@ -93,6 +104,7 @@
         <button
           class="btn link"
           :class="{ active: activeEmbodiment == embodiment }"
+          :aria-pressed="String(activeEmbodiment == embodiment)"
           v-for="(embodiment, index) in embodimentsReversed"
           @click.prevent="
             activeEmbodiment = embodiments[embodiments.length - 1 - index];
@@ -103,6 +115,7 @@
         <div style="padding-top:15px;" v-if="activeEmbodiment">
           <input
             type="text"
+            :aria-label="'Add a characteristic of ' + activeEmbodiment.val"
             v-model="characteristicInput"
             ref="characteristicInput"
             @keypress="addCharacteristic"
@@ -115,7 +128,11 @@
           v-if="characteristic.embodiment.val == activeEmbodiment.val"
         >
           <b>{{ characteristic.val }}</b>
-          <button class="btn remove" @click="removeCharacteristic(index);">
+          <button
+            class="btn remove"
+            :aria-label="'Remove ' + characteristic.val"
+            @click="removeCharacteristic(index);"
+          >
             <b>&times;</b>
           </button>
         </div>
@@ -146,24 +163,31 @@
 </template>
 
 <script>
+// Saved work comes back through JSON.parse. A value that isn't JSON, or isn't
+// the type the app saved (a stored "null", say), gives the fallback instead,
+// so one bad value can't stop the page from mounting.
+function safeLoad(key, fallback) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key));
+    if (Array.isArray(fallback) ? Array.isArray(value) : typeof value === typeof fallback) {
+      return value;
+    }
+  } catch {
+    // not JSON: use the fallback
+  }
+  return fallback;
+}
+
 export default {
   name: "BrandNameMaker",
   data() {
     return {
       steps: ["Feelings", "Embodiment", "Characteristic"],
       curStepIndex: 0,
-      feelings: localStorage.getItem("feelings")
-        ? JSON.parse(localStorage.getItem("feelings"))
-        : [],
-      embodiments: localStorage.getItem("embodiments")
-        ? JSON.parse(localStorage.getItem("embodiments"))
-        : [],
-      characteristics: localStorage.getItem("characteristics")
-        ? JSON.parse(localStorage.getItem("characteristics"))
-        : [],
-      projectCount: localStorage.getItem("projectCount")
-        ? parseInt(localStorage.getItem("projectCount"))
-        : 0,
+      feelings: safeLoad("feelings", []),
+      embodiments: safeLoad("embodiments", []),
+      characteristics: safeLoad("characteristics", []),
+      projectCount: safeLoad("projectCount", 0),
       feelingInput: "",
       embodimentInput: "",
       characteristicInput: "",
@@ -250,15 +274,9 @@ export default {
       this.dirty = false;
     },
     loadProject(count) {
-      this.feelings = localStorage.getItem(`feelings-${count}`)
-        ? JSON.parse(localStorage.getItem(`feelings-${count}`))
-        : [];
-      this.embodiments = localStorage.getItem(`embodiments-${count}`)
-        ? JSON.parse(localStorage.getItem(`embodiments-${count}`))
-        : [];
-      this.characteristics = localStorage.getItem(`characteristics-${count}`)
-        ? JSON.parse(localStorage.getItem(`characteristics-${count}`))
-        : [];
+      this.feelings = safeLoad(`feelings-${count}`, []);
+      this.embodiments = safeLoad(`embodiments-${count}`, []);
+      this.characteristics = safeLoad(`characteristics-${count}`, []);
       this.curStepIndex = 0;
       this.dirty = false;
     },
