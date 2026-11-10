@@ -242,6 +242,7 @@ export default {
     },
     removeFeeling(index) {
       this.feelings.splice(index, 1);
+      this.dropOrphans();
       this.dirty = true;
     },
     addEmbodiment(e) {
@@ -257,7 +258,18 @@ export default {
     },
     removeEmbodiment(index) {
       this.embodiments.splice(index, 1);
+      this.dropOrphans();
       this.dirty = true;
+    },
+    // An embodiment belongs to a feeling, and a characteristic to an
+    // embodiment, by name, as the tabs match them. Once no item of that name
+    // is left, its children go too, so they can't show up in step 3 or Results.
+    dropOrphans() {
+      const names = (list) => new Set(list.map((item) => item.val));
+      const feelings = names(this.feelings);
+      this.embodiments = this.embodiments.filter((e) => feelings.has(e.feeling.val));
+      const embodiments = names(this.embodiments);
+      this.characteristics = this.characteristics.filter((c) => embodiments.has(c.embodiment.val));
     },
     addCharacteristic(e) {
       if (e.charCode === 13 && e.target.value.trim()) {
